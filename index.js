@@ -42,7 +42,7 @@ async function createTweet () {
     const bitcoinDominance = coinDataArr.map(([id, data]) => data.usd_market_cap).reduce((total, current) => total += current) / totalMktCap
     const bitcoinDominanceReadable = `${millify(bitcoinDominance * 100, { precision: 0 })}%`
     let tweet = ''
-    tweet += `Bitcoin dominates ${bitcoinDominanceReadable} of the ${totalMktCapReadable} crypto market\n\n`
+    tweet += `#Bitcoin dominates ${bitcoinDominanceReadable} of the ${totalMktCapReadable} crypto market\n\n`
     coinDataArr.forEach(([id, data]) => {
         const marketCapPct = data.usd_market_cap / totalMktCap
         tweet +=
@@ -50,7 +50,6 @@ async function createTweet () {
             `(${millify(marketCapPct * 100, { precision: 1 })}%)` + ' ' +
             '\n'
     })
-    console.log(tweet)
     return tweet
 };
 
@@ -73,10 +72,9 @@ async function sendTweet(status) {
     });
 }
 
-// async function exec() {
-//     const tweet = await createTweet()
-//     await sendTweet(tweet)
-// }
+async function exec() {
+    const tweet = await createTweet()
+    await sendTweet(tweet)
+}
 
-// exec()
-createTweet()
+exec()
