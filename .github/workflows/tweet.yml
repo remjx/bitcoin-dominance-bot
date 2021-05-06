@@ -1,0 +1,19 @@
+name: tweet
+on:
+  schedule:
+    - cron:  '*/5 * * * *'
+jobs:
+  tweet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+      - run: npm install
+      - run: node .
