@@ -1,0 +1,26 @@
+{
+  "name": "bitcoin-market-cap-twitter-bot",
+  "version": "1.0.0",
+  "description": "tweets bitcoin market cap stats for top 5 bitcoin forks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remjx/bitcoin-market-cap-twitter-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/remjx/bitcoin-market-cap-twitter-bot/issues"
+  },
+  "homepage": "https://github.com/remjx/bitcoin-market-cap-twitter-bot#readme",
+  "dependencies": {
+    "coingecko-api": "^1.0.10",
+    "dotenv": "^9.0.0",
+    "millify": "^3.5.2",
+    "twitter": "^1.7.1",
+    "twitter-v2": "^1.1.0"
+  }
+}
