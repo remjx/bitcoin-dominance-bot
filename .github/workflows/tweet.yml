@@ -1,8 +1,7 @@
 name: tweet
 on:
   schedule:
-    - cron:  '* */1 * * *'
-  push:
+    - cron:  '0 * * * *'
 jobs:
   tweet:
     env:
