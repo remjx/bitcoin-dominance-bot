@@ -6,48 +6,43 @@ require('dotenv').config()
 
 const CoinGeckoClient = new CoinGecko();
 
-async function createTweet () {
-    function getTicker(id) {
-        switch (id) {
-            case 'bitcoin': return 'BTC'
-            case 'bitcoin-cash': return 'BCH'
-            case 'bitcoin-cash-sv': return 'BSV'
-            case 'bitcoin-gold': return 'BTG'
-            case 'bitcoin-diamond': return 'BCD'
-        }
+const ids = [
+    "bitcoin",
+    "bitcoin-cash",
+    "bitcoin-cash-sv",
+]
+
+function getTicker(id) {
+    switch (id) {
+        case 'bitcoin': return 'BTC'
+        case 'bitcoin-cash': return 'BCH'
+        case 'bitcoin-cash-sv': return 'BSV'
     }
-    const ids = [
-        "bitcoin",
-        "bitcoin-cash",
-        "bitcoin-cash-sv",
-        "bitcoin-gold",
-        "bitcoin-diamond"
-    ]
+}
+
+async function createTweet () {
     let globalDataProm = CoinGeckoClient.global();
     let coinDataProm = CoinGeckoClient.simple.price({
         ids,
         include_market_cap: true,
-        include_24hr_change: true,
     })
     const [globalDataResp, coinDataResp] = await Promise.all([globalDataProm, coinDataProm])
     const globalData = globalDataResp.data.data
     const coinData = coinDataResp.data
     const totalMktCap = globalData.total_market_cap.usd
-    const totalMktCapReadable = '$' + millify(totalMktCap, {
+    const totalMktCapFormatted = '$' + millify(totalMktCap, {
         precision: 1,
     })
     const coinDataArr = Object.entries(coinData).sort((a, b) => {
         return b[1].usd_market_cap - a[1].usd_market_cap 
       })
-    const bitcoinDominance = coinDataArr.map(([id, data]) => data.usd_market_cap).reduce((total, current) => total += current) / totalMktCap
-    const bitcoinDominanceReadable = `${millify(bitcoinDominance * 100, { precision: 0 })}%`
+    const bitcoinDominancePct = coinDataArr.map(([, data]) => data.usd_market_cap).reduce((total, current) => total += current) / totalMktCap
+    const bitcoinDominancePctFormatted = `${millify(bitcoinDominancePct * 100, { precision: 0 })}%`
     let tweet = ''
-    tweet += `#Bitcoin dominates ${bitcoinDominanceReadable} of the ${totalMktCapReadable} crypto market\n\n`
+    tweet += `#Bitcoin dominates ${bitcoinDominancePctFormatted} of the ${totalMktCapFormatted} crypto market.\n\n`
     coinDataArr.forEach(([id, data]) => {
-        const marketCapPct = data.usd_market_cap / totalMktCap
         tweet +=
-            `${getTicker(id)}: ` + new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data.usd) + ' ' +
-            `(${millify(marketCapPct * 100, { precision: 1 })}%)` + ' ' +
+            `#${getTicker(id)}: ` + new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data.usd) + ' ' +
             '\n'
     })
     return tweet
@@ -66,7 +61,7 @@ async function sendTweet(status) {
             console.log(tweet.text);
             console.log('---- End ----')
         } else {
-            console.log(error)
+            console.error(error)
             process.exit(1)
         }
     });
@@ -75,6 +70,7 @@ async function sendTweet(status) {
 async function exec() {
     const tweet = await createTweet()
     await sendTweet(tweet)
+    // console.log(tweet)
 }
 
 exec()
